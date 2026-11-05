@@ -12,17 +12,17 @@ const FIRMA = "Watari R. ";
 // Diseño de las cartas en modo "solo texto" (el mismo CSS de tus cartas)
 const CSS_CARTA = `
 h1 {
-  font-family: cursive;
+  font-family: 'Dancing Script', cursive;
   text-align: center;
   color: #FFD700;
 }
 .Text {
   text-align: center;
-  font-family: cursive;
+  font-family: 'Dancing Script', cursive;
 }
 .watari {
   text-align: right;
-  font-family: cursive;
+  font-family: 'Dancing Script', cursive;
   color: black;
 }
 h6 {
@@ -69,6 +69,11 @@ p {
   margin: 0 auto;
 }
 `;
+// Fuente de las cartas: se descarga igual en celular y en PC
+// (la palabra "cursive" sola cambia según el sistema, por eso se veía distinta)
+const FUENTE_CARTA =
+  "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap";
+
 const LOGO_SPOTIFY =
   "https://upload.wikimedia.org/wikipedia/commons/9/99/Black_Spotify_logo_with_text.svg";
 const BOTON_SPOTIFY =
@@ -168,7 +173,11 @@ function plantillaCarta(c) {
   const despedida = c.despedida ? "<br>" + formatear(c.despedida) : "";
   return (
     `<!doctype html><html lang="es"><head><meta charset="UTF-8">` +
-    `<title>${esc(TITULO)}</title><style>${CSS_CARTA}</style></head><body>` +
+    `<title>${esc(TITULO)}</title>` +
+    `<link rel="preconnect" href="https://fonts.googleapis.com">` +
+    `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>` +
+    `<link rel="stylesheet" href="${FUENTE_CARTA}">` +
+    `<style>${CSS_CARTA}</style></head><body>` +
     `<h1>${esc(TITULO)}</h1>` +
     `<h6>${esc(fecha)}</h6>` +
     `<p class="Text">${formatear(c.texto)}${despedida}</p>` +
@@ -528,6 +537,7 @@ function limpiarCancion() {
   editCancionId = null;
   $("cancion-form").reset();
   $("c-guardar").textContent = "Guardar canción";
+  reiniciarHistorial();
 }
 
 function refrescarPortafolio() {
@@ -580,6 +590,7 @@ async function editarCancion(id) {
   $("c-titulo").value = data.titulo || "";
   $("c-url").value = data.url || "";
   $("c-desc").value = data.descripcion || "";
+  reiniciarHistorial();
   $("c-guardar").textContent = "Guardar cambios";
   msgCancion("Editando canción. Cambia lo que necesites y guarda.");
   $("admin").scrollTo({ top: 0, behavior: "smooth" });
@@ -671,6 +682,39 @@ async function guardarCancion(e) {
   refrescarPortafolio();
 }
 
+/* --- historial para el botón "Deshacer" de la descripción --- */
+let historial = [""];
+let timerHistorial = null;
+
+function reiniciarHistorial() {
+  clearTimeout(timerHistorial);
+  historial = [$("c-desc").value];
+}
+
+// guarda el estado actual del texto (si cambió desde el último guardado)
+function guardarEstado() {
+  clearTimeout(timerHistorial);
+  const v = $("c-desc").value;
+  if (historial[historial.length - 1] !== v) historial.push(v);
+  if (historial.length > 200) historial.shift();
+}
+
+function deshacerDescripcion() {
+  const t = $("c-desc");
+  clearTimeout(timerHistorial);
+  const actual = t.value;
+  if (historial.length && historial[historial.length - 1] === actual)
+    historial.pop();
+  if (!historial.length) {
+    historial = [actual];
+    msgCancion("No hay nada que deshacer.", true);
+    return;
+  }
+  t.value = historial[historial.length - 1];
+  t.focus();
+  msgCancion("Deshecho ✓");
+}
+
 // Envuelve el texto seleccionado con una marca (** o __)
 function envolverSeleccion(marca) {
   const t = $("c-desc");
@@ -679,7 +723,9 @@ function envolverSeleccion(marca) {
     msgCancion("Selecciona primero la frase que quieres resaltar.", true);
     return;
   }
+  guardarEstado(); // para poder volver a como estaba antes
   t.value = v.slice(0, s) + marca + v.slice(s, e) + marca + v.slice(e);
+  guardarEstado();
   t.focus();
   t.setSelectionRange(s + marca.length, e + marca.length);
   msgCancion("");
@@ -757,6 +803,12 @@ function conectarEventos() {
   });
   $("c-negrilla").addEventListener("click", () => envolverSeleccion("**"));
   $("c-subrayado").addEventListener("click", () => envolverSeleccion("__"));
+  $("c-deshacer").addEventListener("click", deshacerDescripcion);
+  // mientras escribes, se guarda un estado cuando haces una pausa
+  $("c-desc").addEventListener("input", () => {
+    clearTimeout(timerHistorial);
+    timerHistorial = setTimeout(guardarEstado, 600);
+  });
   $("canciones-lista").addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-accion]");
     if (!btn) return;
