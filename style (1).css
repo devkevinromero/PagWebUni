@@ -1,0 +1,267 @@
+/* —— reset & layout ——————————————————— */
+* {
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: cursive, 'Courier New', Courier, monospace;
+  background: #ffffff;
+  color: #111111;
+  overflow: hidden;
+}
+
+/* —— botón hamburguesa ————————————————— */
+.menu-toggle {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.menu-toggle .material-icons {
+  font-size: 24px;
+  color: #111111;
+  pointer-events: none;
+}
+
+/* —— sidebar (drawer) ————————————————— */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 250px;
+  height: 100%;
+  background: #ffffff;
+  overflow-y: auto;
+  padding: 70px 0 20px;
+  transition: left 0.3s ease;
+  z-index: 999;
+  border-right: 1px solid #ddd;
+}
+.sidebar.open {
+  left: 0;
+}
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  font-family: 'Courier New', Courier, monospace;
+  gap: 16px;
+  padding: 12px 24px;
+  color: #111111;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.menu-item:hover {
+  background: #f0f0f0;
+}
+.menu-item .material-icons {
+  font-size: 24px;
+  color: #111111;
+}
+.menu-item .label {
+  font-size: 14px;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: bold;
+  font-family: 'Courier New', cursive, monospace;
+  color: #555555;
+  padding: 20px 24px 6px;
+}
+
+/* —— main content & iframe ——————————— */
+.main-content {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #ffffff;
+}
+
+/* —— activo (color morado) ——————————— */
+.menu-item.active {
+  color: #800080;
+  background-color: #f3e9f9;
+}
+.menu-item.active .material-icons {
+  color: #800080;
+}
+
+
+/* ===================================================
+   NUEVO: sesión, panel de administración y utilidades
+   (todo lo de arriba queda exactamente igual)
+   =================================================== */
+
+.hidden {
+  display: none !important;
+}
+
+/* mientras no hay sesión iniciada, no se ve nada del sitio */
+.bloqueado .menu-toggle,
+.bloqueado .sidebar,
+.bloqueado .main-content {
+  display: none;
+}
+
+/* la lista de cartas se comporta como si sus enlaces estuvieran directo en el menú */
+#lista-cartas {
+  display: contents;
+}
+
+/* botones del menú (Gestionar cartas / Cerrar sesión) con el mismo look que los enlaces */
+button.menu-item {
+  width: 100%;
+  background: none;
+  border: 0;
+  text-align: left;
+  font-size: inherit;
+}
+
+/* pantallas completas: login y panel admin */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+}
+.overlay.admin {
+  align-items: flex-start;
+}
+.card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card.ancho {
+  max-width: 640px;
+}
+.card h2 {
+  margin: 0 0 4px;
+  text-align: center;
+  color: #800080;
+}
+
+.card input,
+.card textarea,
+.card select {
+  width: 100%;
+  font: inherit;
+  font-size: 16px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111111;
+}
+.card textarea {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  resize: vertical;
+}
+
+#admin-form,
+#cancion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#admin-form label,
+#cancion-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #555555;
+}
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ayuda {
+  margin: 0;
+  font-size: 12px;
+  color: #777777;
+  line-height: 1.5;
+}
+
+.fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.btn {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #800080;
+  background: #800080;
+  color: #ffffff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn.secundario {
+  background: #ffffff;
+  color: #800080;
+}
+.btn.mini {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.error {
+  color: #b00020;
+  min-height: 1.2em;
+  margin: 0;
+  font-size: 13px;
+}
+.ok {
+  color: #2e7d32;
+  min-height: 1.2em;
+  margin: 0;
+  font-size: 13px;
+}
+
+.lista-admin {
+  list-style: none;
+  margin: 8px 0 40px;
+  padding: 0;
+}
+.lista-admin li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eeeeee;
+  font-size: 14px;
+}

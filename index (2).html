@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link
+      rel="icon"
+      href="https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png"
+      type="image/png"
+    />
+    <title>&lt;3</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="bloqueado">
+    <!-- INICIO DE SESIÓN -->
+    <div id="login" class="overlay hidden">
+      <form id="login-form" class="card">
+        <h2>&lt;3</h2>
+        <input
+          type="email"
+          id="email"
+          placeholder="Correo"
+          required
+          autocomplete="username"
+        />
+        <input
+          type="password"
+          id="password"
+          placeholder="Contraseña"
+          required
+          autocomplete="current-password"
+        />
+        <button type="submit" class="btn">Entrar</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </div>
+
+    <!-- BOTÓN HAMBURGUESA -->
+    <button
+      id="menu-toggle"
+      class="menu-toggle"
+      aria-label="Abrir / cerrar menú"
+    >
+      <span class="material-icons">menu</span>
+    </button>
+
+    <!-- MENÚ LATERAL (drawer) -->
+    <aside id="sidebar" class="sidebar">
+      <nav>
+        <!-- PORTAFOLIO -->
+        <a href="#portafolio" class="menu-item" data-key="portafolio">
+          <span class="material-icons">library_music</span>
+          <span class="label">Portafolio Spotify</span>
+        </a>
+
+        <hr />
+
+        <!-- CARTAS (se generan solas desde la base de datos) -->
+        <div class="section-title">Cartas</div>
+        <div id="lista-cartas"></div>
+
+        <hr />
+
+        <button type="button" class="menu-item solo-admin hidden" data-accion="admin">
+          <span class="material-icons">edit_note</span>
+          <span class="label">Administrar</span>
+        </button>
+
+        <button type="button" class="menu-item" data-accion="salir">
+          <span class="material-icons">logout</span>
+          <span class="label">Cerrar sesión</span>
+        </button>
+        <br />
+        <br />
+        <br />
+      </nav>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main-content">
+      <iframe
+        id="viewer"
+        title="visor de páginas"
+        src=""
+        frameborder="0"
+      ></iframe>
+    </main>
+
+    <!-- PANEL DE ADMINISTRACIÓN -->
+    <div id="admin" class="overlay admin hidden">
+      <div class="card ancho">
+        <h2>Administrar</h2>
+
+        <div class="fila">
+          <button type="button" class="btn" id="tab-cartas">Cartas</button>
+          <button type="button" class="btn secundario" id="tab-canciones">Canciones</button>
+          <button type="button" class="btn secundario" id="a-cerrar">Cerrar</button>
+        </div>
+
+        <!-- ========== CARTAS ========== -->
+        <section id="sec-cartas" class="grupo">
+          <form id="admin-form">
+            <label>
+              Tipo de carta
+              <select id="a-modo">
+                <option value="texto">Solo texto (con el diseño de siempre)</option>
+                <option value="html">HTML completo (diseño propio)</option>
+              </select>
+            </label>
+
+            <label>
+              Fecha (ordena la carta en el menú)
+              <input type="date" id="a-fecha" required />
+            </label>
+            <label>
+              Etiqueta del menú (opcional)
+              <input type="text" id="a-etiqueta" placeholder="ej. 16/21‑09‑2023" />
+            </label>
+
+            <!-- MODO: SOLO TEXTO -->
+            <div class="grupo" data-modo="texto">
+              <label>
+                Fecha que se muestra en la carta (opcional)
+                <input
+                  type="text"
+                  id="a-fecha-mostrar"
+                  placeholder="Si la dejas vacía se usa la fecha de arriba (13-07-2026)"
+                />
+              </label>
+              <label>
+                Texto de la carta
+                <textarea id="a-texto" rows="12"></textarea>
+              </label>
+              <label>
+                Despedida
+                <input
+                  type="text"
+                  id="a-despedida"
+                  placeholder="ej. Feliz cumpleaños, señorita"
+                />
+              </label>
+              <p class="ayuda">
+                Cada Enter es un salto de línea. Links: [texto](https://enlace) ·
+                Imágenes: ![descripción](https://direccion-de-la-imagen)
+              </p>
+            </div>
+
+            <!-- MODO: HTML COMPLETO -->
+            <div class="grupo hidden" data-modo="html">
+              <label>
+                URL base (opcional, si la carta usa imágenes/archivos propios)
+                <input type="url" id="a-base" placeholder="https://xxxxxx.mimo.run/" />
+              </label>
+              <label>
+                Subir archivo .html
+                <input type="file" id="a-archivo" accept=".html,.htm,text/html" />
+              </label>
+              <label>
+                Código de la carta
+                <textarea id="a-html" rows="10" spellcheck="false"></textarea>
+              </label>
+            </div>
+
+            <div class="fila">
+              <button type="submit" class="btn" id="a-guardar">Guardar carta</button>
+              <button type="button" class="btn secundario" id="a-limpiar">Limpiar</button>
+            </div>
+            <p id="admin-msg" class="error"></p>
+          </form>
+
+          <ul id="admin-lista" class="lista-admin"></ul>
+        </section>
+
+        <!-- ========== CANCIONES ========== -->
+        <section id="sec-canciones" class="grupo hidden">
+          <form id="cancion-form">
+            <label>
+              Título (Enter = salto de línea)
+              <textarea id="c-titulo" rows="2" placeholder="ej. Fix you - Coldplay"></textarea>
+            </label>
+            <label>
+              Link de la canción en Spotify
+              <input type="url" id="c-url" placeholder="https://open.spotify.com/track/..." />
+            </label>
+            <label>
+              Descripción
+              <textarea id="c-desc" rows="12"></textarea>
+            </label>
+            <div class="fila">
+              <button type="button" class="btn secundario" id="c-negrilla"><b>B</b> Negrilla</button>
+              <button type="button" class="btn secundario" id="c-subrayado"><u>U</u> Subrayado</button>
+            </div>
+            <p class="ayuda">
+              Selecciona una frase y toca el botón, o escribe las marcas:
+              **negrilla** · __subrayado__ · **__ambos__**. Cada Enter es un
+              salto de línea.
+            </p>
+
+            <div class="fila">
+              <button type="submit" class="btn" id="c-guardar">Guardar canción</button>
+              <button type="button" class="btn secundario" id="c-limpiar">Limpiar</button>
+            </div>
+            <p id="cancion-msg" class="error"></p>
+          </form>
+
+          <ul id="canciones-lista" class="lista-admin"></ul>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
